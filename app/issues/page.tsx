@@ -2,7 +2,7 @@ import React from 'react'
 
 const Issuepages= () => {
   return (
-    <div>Issue</div>
+    <div>IssuePage</div>
   )
 }
 
