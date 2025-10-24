@@ -1,7 +1,6 @@
 import { Button } from '@radix-ui/themes'
 import React from 'react'
-import { Link } from 'react-router-dom'
-
+import Link from 'next/link'
 const IssueActions = () => {
   return (
        <div className='mb-5'>
