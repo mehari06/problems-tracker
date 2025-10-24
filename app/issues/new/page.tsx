@@ -30,6 +30,7 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import { createIssueSchema } from '@/app/validationSchema';
 import { z } from 'zod';
 import { Text } from '@radix-ui/themes';
+import ErrorMessage from '@/app/components/ErrorMessage';
 
 // interface IssueForm {
 //   title: string;
@@ -64,18 +65,18 @@ const NewIssuePage = () => {
       }
     })}>
         <TextField.Root placeholder="Title of the issue" {...register('title')}/>
-        {errors.title && (
-          <Text color='red'>{errors.title.message}</Text>
-        )}
+     
+          <ErrorMessage >{errors.title?.message}</ErrorMessage>
+  
         <Controller 
         name="description" 
         control={control}
         render={({field})=>
           <SimpleMDE placeholder="Describe the issue in detail" {...field}/>}
         />
-        {errors.description && (
-          <Text color='red'>{errors.description.message}</Text>
-        )}
+       
+          <Text >{errors.description?.message}</Text>
+    
         <Button>Submit New Issue</Button>
     </form>
     </div>
