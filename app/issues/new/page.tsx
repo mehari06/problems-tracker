@@ -19,7 +19,7 @@
 
 'use client';
 
-import { Button, Callout, TextField } from '@radix-ui/themes'
+import { Button, Callout, Spinner, TextField } from '@radix-ui/themes'
 import React, { useState } from 'react'
 import SimpleMDE from "react-simplemde-editor";
 import { useForm, Controller } from "react-hook-form";
@@ -31,6 +31,7 @@ import { createIssueSchema } from '@/app/validationSchema';
 import { z } from 'zod';
 import { Text } from '@radix-ui/themes';
 import ErrorMessage from '@/app/components/ErrorMessage';
+import { on } from 'events';
 
 // interface IssueForm {
 //   title: string;
@@ -46,6 +47,17 @@ const NewIssuePage = () => {
     resolver: zodResolver(createIssueSchema)
   });
   const[error,setError]=useState("");
+  const[isSubmitting,setSubmitting]=useState(false);
+      const onSubmit=handleSubmit(async(data)=>{
+       try {
+        setSubmitting(true);
+        await axios.post('/api/issues',data)
+        router.push('/issues');
+      } catch (error) {
+         setSubmitting(false);
+         setError("An unexpected Error Occurred");
+      }
+    });
 
   return (
     <div  className='max-w-xl'  >
@@ -56,14 +68,7 @@ const NewIssuePage = () => {
       )}
     <form 
     className='space-y-4' 
-    onSubmit={handleSubmit(async(data)=>{
-      try {
-        await axios.post('/api/issues',data)
-        router.push('/issues');
-      } catch (error) {
-         setError("An unexpected Error Occurred");
-      }
-    })}>
+    onSubmit={onSubmit}>
         <TextField.Root placeholder="Title of the issue" {...register('title')}/>
      
           <ErrorMessage >{errors.title?.message}</ErrorMessage>
@@ -77,7 +82,7 @@ const NewIssuePage = () => {
        
           <Text >{errors.description?.message}</Text>
     
-        <Button>Submit New Issue</Button>
+        <Button disabled={isSubmitting}>Submit New Issue{isSubmitting && <Spinner/>}</Button>
     </form>
     </div>
   )
