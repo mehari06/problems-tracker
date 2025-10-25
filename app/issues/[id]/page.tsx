@@ -92,7 +92,7 @@ import { Card, Flex, Heading,Text } from '@radix-ui/themes';
 import { notFound } from 'next/navigation';
 //import React from 'react'
  import ReactMarkdown from 'react-markdown';
-//import IssueStatusBadge from './../../components/IssueStatusBadge';
+//import delay from 'delay';
 
 interface Props{
     params:{
@@ -108,6 +108,7 @@ const IssueDetailPage = async({params}:Props) => {
     if (!awaitedParams?.id) {
         notFound();
     }
+  
     
     const issueId = parseInt(awaitedParams.id);
     
@@ -119,9 +120,10 @@ const IssueDetailPage = async({params}:Props) => {
         where: { id: issueId }
     });
     
-    if(!issue) {
-        notFound();
-    }
+    if(!issue) notFound();
+
+      // await  delay(2000);
+    
     
     return (
         <div>
@@ -130,7 +132,7 @@ const IssueDetailPage = async({params}:Props) => {
             <IssueStatusBadge status={issue.status}/>
             <Text>{issue.createdAt.toDateString()}</Text>
             </Flex>
-            <Card className="prose max-w-none!" mt="4">
+            <Card className="prose" mt="4">
             <ReactMarkdown >{issue.description}</ReactMarkdown>
             </Card>
             
