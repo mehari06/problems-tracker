@@ -90,7 +90,7 @@ import prisma from '@/prisma/client';
 import { Box, Grid } from '@radix-ui/themes';
 import { notFound } from 'next/navigation';
 //import React from 'react'
- import EditissueButton from './editissuebutton';
+ import EditissueButton from './EditIssueButton';
 import IssueDetails from './IsuueDetails';
 //import delay from 'delay';
 

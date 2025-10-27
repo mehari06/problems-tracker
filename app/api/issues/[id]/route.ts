@@ -1,0 +1,60 @@
+import { NextRequest, NextResponse } from "next/server"
+import { string } from "zod"
+import { safeParse } from "zod/v4/core";
+import { issueSchema } from './../../../validationSchema';
+import prisma from "@/prisma/client";
+import { Issue } from '@prisma/client';
+
+
+export async function PATCH(
+    request:NextRequest,
+    {params}:{params:{id:string}}){
+   const body=await request.json();
+       const validation= issueSchema.safeParse(body);
+    if(!validation.success)
+      return NextResponse.json(validation.error.format(), {status:400});
+  // Validate id
+  // Log params for debugging and support fallback when params is missing
+  try {
+    console.log('PATCH /api/issues/[id] called. params:', params, 'request.url:', request.url);
+  } catch (e) {
+    /* ignore logging errors */
+  }
+
+  const idStr = params?.id ?? (() => {
+    try {
+      const segments = request.nextUrl.pathname.split('/').filter(Boolean);
+      return segments[segments.length - 1];
+    } catch (e) {
+      return undefined;
+    }
+  })();
+
+  const id = idStr ? parseInt(String(idStr)) : NaN;
+  if (isNaN(id)) {
+    console.error('Invalid id received in PATCH /api/issues/[id]:', { idStr, params, url: request.url });
+    return NextResponse.json({ error: 'Invalid id', detail: { id: idStr } }, { status: 400 });
+  }
+
+  try {
+    const issue = await prisma.issue.findUnique({ where: { id } });
+
+    if (!issue) {
+      return NextResponse.json({ error: 'Issue not found' }, { status: 404 });
+    }
+
+    const updatedIssue = await prisma.issue.update({
+      where: { id: issue.id },
+      data: {
+        title: body.title,
+        description: body.description,
+      },
+    });
+
+    return NextResponse.json(updatedIssue);
+  } catch (err) {
+    console.error('PATCH /api/issues/[id] error:', err);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+
+}

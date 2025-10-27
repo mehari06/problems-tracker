@@ -5,6 +5,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { Theme, ThemePanel } from "@radix-ui/themes";
 import NavBar from './NavBar';
+import { Suspense } from "react";
 
 ;
 
@@ -28,7 +29,15 @@ export default function RootLayout({
       <body className={inter.variable}>
         <Theme accentColor="purple" radius="large" scaling="90%">
           <NavBar />
-          <main className="p-5">{children}</main>
+          <main className="p-5">
+               <Suspense fallback={
+              <div className="flex justify-center items-center h-64">
+                <div>Loading...</div>
+              </div>
+            }>
+              {children}
+            </Suspense>
+          </main>
           <ThemePanel/>
   </Theme>
       </body>
