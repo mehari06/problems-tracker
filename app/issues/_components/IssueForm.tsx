@@ -59,6 +59,7 @@ const   IssueForm= ({issue}:{ issue?:Issue}) => {
         const res = await axios.patch(`/api/issues/${issue.id}`, data);
         // Navigate to the issue detail page after update
         router.push(`/issues/${issue.id}`);
+        router.refresh();
       } else {
         // Create new issue
         const res = await axios.post('/api/issues', data);

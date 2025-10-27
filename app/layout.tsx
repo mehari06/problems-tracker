@@ -3,7 +3,7 @@ import './theme-config.css'
 import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import { Theme, ThemePanel } from "@radix-ui/themes";
+import { Container, Theme, ThemePanel } from "@radix-ui/themes";
 import NavBar from './NavBar';
 import { Suspense } from "react";
 
@@ -35,7 +35,9 @@ export default function RootLayout({
                 <div>Loading...</div>
               </div>
             }>
+              <Container>
               {children}
+              </Container>
             </Suspense>
           </main>
           <ThemePanel/>
