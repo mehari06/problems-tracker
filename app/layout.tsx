@@ -2,16 +2,11 @@ import "@radix-ui/themes/styles.css";
 import './theme-config.css'
 import './globals.css';
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
 import { Container, Theme, ThemePanel } from "@radix-ui/themes";
 import NavBar from './NavBar';
 import { Suspense } from "react";
 
 ;
-
-const inter = Inter({ subsets: ['latin'],
-  variable: '--font-inter'
-})
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -26,7 +21,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       
-      <body className={inter.variable}>
+      <head>
+        {/* Load Inter from Google Fonts instead of next/font to avoid turbopack internal font issues */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
+      </head>
+      <body className="font-inter">
         <Theme accentColor="purple" radius="large" scaling="90%">
           <NavBar />
           <main className="p-5">
