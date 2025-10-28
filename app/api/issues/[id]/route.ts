@@ -62,14 +62,40 @@ export async function PATCH(
 export async function DELETE(
     request:NextRequest,
     {params}:{params:{id:string}}){
-      const issue = await prisma.issue.findUnique({
-        where: { id:parseInt(params.id)}
-      });
-      if (!issue) 
-      return NextResponse.json({ error: 'Invalid issue' }, { status: 404 });
-    await  prisma.issue.delete({
-        where:{id:issue.id}
-      });
-      return NextResponse.json({})
+  // Log for debugging
+  try {
+    console.log('DELETE /api/issues/[id] called. params:', params, 'url:', request.url);
+  } catch (e) {
+    /* ignore */
+  }
 
+  // Determine id (support fallback when params missing)
+  const idStr = params?.id ?? (() => {
+    try {
+      const segments = request.nextUrl.pathname.split('/').filter(Boolean);
+      return segments[segments.length - 1];
+    } catch (e) {
+      return undefined;
     }
+  })();
+
+  const id = idStr ? parseInt(String(idStr)) : NaN;
+  if (isNaN(id)) {
+    console.error('Invalid id received in DELETE /api/issues/[id]:', { idStr, params, url: request.url });
+    return NextResponse.json({ error: 'Invalid id', detail: { id: idStr } }, { status: 400 });
+  }
+
+  try {
+    const issue = await prisma.issue.findUnique({ where: { id } });
+    if (!issue) {
+      return NextResponse.json({ error: 'Issue not found' }, { status: 404 });
+    }
+
+    await prisma.issue.delete({ where: { id: issue.id } });
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error('DELETE /api/issues/[id] error:', err);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+
+}
