@@ -19,16 +19,26 @@ const DeleteIssueButton = ({issueid}:{issueid:number}) => {
                 <AlertDialog.Cancel>
                     <Button variant='soft' color="gray">Cancel</Button>
                 </AlertDialog.Cancel>
-                <AlertDialog.Action>
-                        <Button color='red'onClick={async()=> 
-                            {await axios.delete('/api/issues'+ issueid); 
-                                  router.push('/Issues');
-                                  router.refresh();
+                                <AlertDialog.Action>
+                                    <Button
+                                        color="red"
+                                        onClick={async () => {
+                                            try {
+                                                // Ensure the URL includes a slash before the id
+                                                await axios.delete(`/api/issues/${issueid}`);
+                                                // Navigate back to the issues list (lowercase path)
+                                                router.push('/issues');
+                                            } catch (err) {
+                                                // Log and navigate only on success; show console error for debugging
+                                                // eslint-disable-next-line no-console
+                                                console.error('Failed to delete issue', err);
+                                            }
+                                        }}
+                                    >
+                                        Delete issue
+                                    </Button>
 
-                            }}>Delete issue</Button>
-                          
-
-                 </AlertDialog.Action>
+                                </AlertDialog.Action>
                            
             </Flex>
         </AlertDialog.Content>
