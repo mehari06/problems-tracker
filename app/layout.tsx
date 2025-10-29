@@ -5,6 +5,7 @@ import type { Metadata } from 'next';
 import { Container, Theme, ThemePanel } from "@radix-ui/themes";
 import NavBar from './NavBar';
 import { Suspense } from "react";
+import AuthProvider from "./auth/Provider";
 
 ;
 
@@ -28,6 +29,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-inter">
+        <AuthProvider>
         <Theme accentColor="purple" radius="large" scaling="90%">
           <NavBar />
           <main className="p-5">
@@ -42,7 +44,8 @@ export default function RootLayout({
             </Suspense>
           </main>
           <ThemePanel/>
-  </Theme>
+         </Theme>
+        </AuthProvider>
       </body>
 
     </html>

@@ -4,8 +4,12 @@ import React from 'react'
 import { AiFillBug } from "react-icons/ai";
 import { usePathname } from 'next/navigation';
 import classnames from 'classnames';
+import { useSession } from 'next-auth/react';
+import { Status } from '@prisma/client';
+import { Box } from '@radix-ui/themes';
 
 const NavBar = () => {
+    const {status,data:session}=useSession();
    const currentPath= usePathname();
    console.log(currentPath)
   const links =[
@@ -18,8 +22,9 @@ const NavBar = () => {
     <nav className='flex space-x-6 border-b mb-5 px-5 h-14 items-center'>
         <Link href="/"><AiFillBug /></Link>
         <ul className='flex space-x-6'>
-          {links.map(link=><Link 
-          key={link.href} 
+          {links.map(link=>
+          <li  key={link.href} > 
+          <Link 
           className={
             classnames({
               'text-zinc-900':currentPath===link.href,
@@ -28,9 +33,13 @@ const NavBar = () => {
           
             })
           }
-           href={link.href}>{link.label}</Link>)}
+           href={link.href}>{link.label}</Link></li>)}
             
          </ul>
+         <Box>
+          {status==="authenticated" && ( <Link href="api/auth/signout">Logout</Link> )}
+           {status==="unauthenticated" && ( <Link href="api/auth/signin">Login</Link> )}
+         </Box>
     </nav>
   )
 }
