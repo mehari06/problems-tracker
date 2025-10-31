@@ -4,11 +4,17 @@ import { safeParse } from "zod/v4/core";
 import { issueSchema } from './../../../validationSchema';
 import prisma from "@/prisma/client";
 import { Issue } from '@prisma/client';
+import authOptions from "@/app/auth/authOptions";
+import { getServerSession } from "next-auth";
 
 
 export async function PATCH(
     request:NextRequest,
     {params}:{params:{id:string}}){
+           const session =await getServerSession(authOptions)
+      if(!session){
+        return NextResponse.json({message:"Unauthorized"},{status:401});
+    }
    const body=await request.json();
        const validation= issueSchema.safeParse(body);
     if(!validation.success)
@@ -62,6 +68,10 @@ export async function PATCH(
 export async function DELETE(
     request:NextRequest,
     {params}:{params:{id:string}}){
+           const session =await getServerSession(authOptions)
+      if(!session){
+        return NextResponse.json({message:"Unauthorized"},{status:401});
+    }
   // Log for debugging
   try {
     console.log('DELETE /api/issues/[id] called. params:', params, 'url:', request.url);
