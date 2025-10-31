@@ -1,3 +1,87 @@
+// // This is your Prisma schema file,
+// // learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// generator client {
+//   provider = "prisma-client-js"
+// }
+
+// datasource db {
+//   provider = "mysql"
+//   url      = env("DATABASE_URL")
+// }
+
+// model Issue {
+//   id          Int      @id @default(autoincrement())
+//   title       String   @db.VarChar(255)
+//   description String   @db.Text
+//   status      Status   @default(OPEN)
+//   createdAt   DateTime @default(now())
+//   updatedAt   DateTime @updatedAt
+// }
+
+// enum Status {
+//   OPEN
+//   IN_PROGRESS
+//   CLOSED
+// }
+
+// model Account {
+//   id                String @id @default(cuid())
+//   userId            String
+//   type              String @map("providerType")
+//   provider          String @map("providerId")
+//   providerAccountId String
+
+//   // NextAuth adapter field names (snake_case) mapped to existing DB columns
+//   refresh_token String? @map("refreshToken")
+//   access_token  String? @map("accessToken")
+//   expires_at    Int?    @map("accessTokenExpires")
+//   token_type    String? @map("tokenType")
+//   scope         String? @map("scope")
+//   id_token      String? @map("idToken")
+
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+//   user      User     @relation(fields: [userId], references: [id])
+
+//   @@unique([provider, providerAccountId])
+// }
+
+// model Session {
+//   id           String   @id @default(cuid())
+//   userId       String
+//   expires      DateTime
+//   sessionToken String   @unique
+//   accessToken  String   @unique
+//   createdAt    DateTime @default(now())
+//   updatedAt    DateTime @updatedAt
+//   user         User     @relation(fields: [userId], references: [id])
+// }
+
+// model User {
+//   id            String    @id @default(cuid())
+//   name          String?
+//   email         String?   @unique
+//   emailVerified DateTime?
+//   image         String?
+//   createdAt     DateTime  @default(now())
+//   updatedAt     DateTime  @updatedAt
+//   accounts      Account[]
+//   sessions      Session[]
+// }
+
+// model VerificationRequest {
+//   id         String   @id @default(cuid())
+//   identifier String
+//   token      String   @unique
+//   expires    DateTime
+//   createdAt  DateTime @default(now())
+//   updatedAt  DateTime @updatedAt
+
+//   @@unique([identifier, token])
+// }
+
+//new 
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
@@ -15,8 +99,10 @@ model Issue {
   title       String   @db.VarChar(255)
   description String   @db.Text
   status      Status   @default(OPEN)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("issues")
 }
 
 enum Status {
@@ -25,58 +111,54 @@ enum Status {
   CLOSED
 }
 
+// NextAuth.js Models - Must follow exact schema required by NextAuth
 model Account {
-  id                String @id @default(cuid())
-  userId            String
-  type              String @map("providerType")
-  provider          String @map("providerId")
-  providerAccountId String
+  id                String  @id @default(cuid())
+  userId            String  @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
 
-  // NextAuth adapter field names (snake_case) mapped to existing DB columns
-  refresh_token String? @map("refreshToken")
-  access_token  String? @map("accessToken")
-  expires_at    Int?    @map("accessTokenExpires")
-  token_type    String? @map("tokenType")
-  scope         String? @map("scope")
-  id_token      String? @map("idToken")
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  user      User     @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@map("accounts")
 }
 
 model Session {
   id           String   @id @default(cuid())
-  userId       String
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
   expires      DateTime
-  sessionToken String   @unique
-  accessToken  String   @unique
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  user         User     @relation(fields: [userId], references: [id])
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
 }
 
 model User {
   id            String    @id @default(cuid())
   name          String?
   email         String?   @unique
-  emailVerified DateTime?
+  emailVerified DateTime? @map("email_verified")
   image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
   accounts      Account[]
   sessions      Session[]
+
+  @@map("users")
 }
 
-model VerificationRequest {
-  id         String   @id @default(cuid())
+model VerificationToken {
   identifier String
   token      String   @unique
   expires    DateTime
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
 
   @@unique([identifier, token])
+  @@map("verification_tokens")
 }
