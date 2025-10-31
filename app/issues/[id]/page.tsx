@@ -86,6 +86,7 @@
 // }
 
 // export default IssueDetailPage
+
 import prisma from '@/prisma/client';
 import { Box, Flex, Grid } from '@radix-ui/themes';
 import { notFound } from 'next/navigation';
@@ -93,6 +94,7 @@ import { notFound } from 'next/navigation';
  import EditissueButton from './EditIssueButton';
 import IssueDetails from './IsuueDetails';
 import DeleteIssueButton from './DeleteIssueButton';
+import AssigneeSelect from './AssigneeSelect';
 //import delay from 'delay';
 
 interface Props{
@@ -133,6 +135,7 @@ const IssueDetailPage = async({params}:Props) => {
             </Box>
             <Box>
                 <Flex direction="column" gap="5">
+              <AssigneeSelect/>
               <EditissueButton issueId={issue.id} />
               <DeleteIssueButton issueid={issue.id} />
                 </Flex>
