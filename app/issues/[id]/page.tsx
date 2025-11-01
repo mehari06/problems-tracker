@@ -109,14 +109,17 @@ const IssueDetailPage = async({params}:Props) => {
    const session= await getServerSession(authOptions);
     // AWAIT THE PARAMS - Add this line
     
-    const awaitedParams = await params;
+    // const awaitedParams = await params;
     
-    if (!awaitedParams?.id) {
+    // if (!awaitedParams?.id) {
+    //     notFound();
+    // }
+    if (!params?.id) {
         notFound();
     }
   
     
-    const issueId = parseInt(awaitedParams.id);
+    const issueId = parseInt(params.id);
     
     if (isNaN(issueId)) {
         notFound();

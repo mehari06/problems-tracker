@@ -79,14 +79,14 @@ const authOptions: NextAuthOptions = {
     error: '/auth/signin'
   },
   callbacks: {
-    async signIn({ user, account, profile }) {
+    async signIn({ user, account, profile }: any) {
       console.log('SignIn callback triggered:', { user: user?.email, provider: account?.provider });
       
       // Allow all sign-ins for now to test the flow
       // We'll add the account linking logic back once basic auth works
       return true;
     },
-    async redirect({ url, baseUrl }) {
+    async redirect({ url, baseUrl }: any) {
       // Redirect to home page after successful sign in
       return url.startsWith(baseUrl) ? url : baseUrl;
     }
