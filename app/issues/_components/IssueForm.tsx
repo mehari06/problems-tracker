@@ -18,10 +18,11 @@
 // export default NewIssuePage
 
 'use client';
+import dynamic from 'next/dynamic';
 
 import { Button, Callout, Spinner, TextField } from '@radix-ui/themes'
 import React, { useState } from 'react'
-import SimpleMDE  from "react-simplemde-editor";
+// import SimpleMDE  from "react-simplemde-editor";
 import { useForm, Controller } from "react-hook-form";
 import axios from 'axios';
 import "easymde/dist/easymde.min.css";
@@ -43,6 +44,13 @@ type IssueFormData =z.infer<typeof issueSchema>;// inorder to use zod schema dir
   interface Props{
     issue?:Issue
   }
+  const SimpleMDE = dynamic(
+  () => import('react-simplemde-editor'),
+  { 
+    ssr: false,
+    loading: () => <p>Loading editor...</p>
+  }
+);
 const   IssueForm= ({issue}:{ issue?:Issue}) => {
   const router =useRouter();
   const {register,control,handleSubmit,formState:{errors}} =useForm<IssueFormData>({
