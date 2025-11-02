@@ -6,8 +6,7 @@ import { Container, Theme, ThemePanel } from "@radix-ui/themes";
 import NavBar from './NavBar';
 import { Suspense } from "react";
 import AuthProvider from "./auth/Provider";
-
-;
+import QueryClientProvider from './QueryClientProvider';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -29,6 +28,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-inter">
+       <QueryClientProvider>
         <AuthProvider>
         <Theme accentColor="purple" radius="large" scaling="90%">
           <NavBar />
@@ -46,6 +46,8 @@ export default function RootLayout({
           <ThemePanel/>
          </Theme>
         </AuthProvider>
+        </QueryClientProvider>
+      
       </body>
 
     </html>
