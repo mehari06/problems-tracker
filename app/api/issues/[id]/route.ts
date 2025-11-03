@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { string } from "zod"
 import { safeParse } from "zod/v4/core";
-import { issueSchema } from './../../../validationSchema';
+import { issueSchema,PatchIssueSchema } from './../../../validationSchema';
 import prisma from "@/prisma/client";
 import { Issue } from '@prisma/client';
 import authOptions from "@/app/auth/authOptions";
@@ -16,7 +16,7 @@ export async function PATCH(
         return NextResponse.json({message:"Unauthorized"},{status:401});
     }
    const body=await request.json();
-       const validation= issueSchema.safeParse(body);
+       const validation= PatchIssueSchema.safeParse(body);
     if(!validation.success)
       return NextResponse.json(validation.error.format(), {status:400});
   // Validate id
@@ -43,6 +43,14 @@ export async function PATCH(
   }
 
   try {
+    const assignedToUserId = body.assigneeId;
+    if (assignedToUserId) {
+      const user = await prisma.user.findUnique({ where: { id: assignedToUserId } });
+      if (!user) {
+        return NextResponse.json({ error: 'Invalid User' }, { status: 400 });
+      }
+    }
+
     const issue = await prisma.issue.findUnique({ where: { id } });
 
     if (!issue) {
@@ -54,6 +62,8 @@ export async function PATCH(
       data: {
         title: body.title,
         description: body.description,
+        assignedToUserId
+
       },
     });
 
