@@ -97,12 +97,12 @@ datasource db {
 model Issue {
   id               Int      @id @default(autoincrement())
   title            String   @db.VarChar(255)
-  description      String   @db.Text
+  description      String?  @db.Text
   status           Status   @default(OPEN)
   createdAt        DateTime @default(now()) @map("created_at")
   updatedAt        DateTime @updatedAt @map("updated_at")
   assignedToUserId String?  @db.VarChar(255)
-  assignedToUser   User?    @relation(fields: [assignedToUserId], references: [id], onDelete: SetNull)
+  assignedToUser   User?    @relation(fields: [assignedToUserId], references: [id])
 
   @@map("issues")
 }
