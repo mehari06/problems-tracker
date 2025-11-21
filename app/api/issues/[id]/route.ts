@@ -8,19 +8,32 @@ import authOptions from "@/app/auth/authOptions";
 import { getServerSession } from "next-auth";
 
 
-export async function PATCH(
-    request:NextRequest,
-    {params}:{params:{id:string}}){
-    //        const session =await getServerSession(authOptions)
-    //   if(!session){
-    //     return NextResponse.json({message:"Unauthorized"},{status:401});
-    // }
-   const body=await request.json();
-       const validation= PatchIssueSchema.safeParse(body);
-    if(!validation.success)
-      return NextResponse.json(validation.error.format(), {status:400});
+// export async function PATCH(
+//     request:NextRequest,
+//     {params}:{params:{id:string}}){
+//     //        const session =await getServerSession(authOptions)
+//     //   if(!session){
+//     //     return NextResponse.json({message:"Unauthorized"},{status:401});
+//     // }
+//    const body=await request.json();
+//        const validation= PatchIssueSchema.safeParse(body);
+//     if(!validation.success)
+//       return NextResponse.json(validation.error.format(), {status:400});
   // Validate id
   // Log params for debugging and support fallback when params is missing
+  export async function PATCH(
+    request: NextRequest,
+    { params }: { params: { id: string } }) {
+    
+    const session = await getServerSession(authOptions)
+    if (!session) {
+        return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const validation = PatchIssueSchema.safeParse(body);
+    if (!validation.success)
+        return NextResponse.json(validation.error.format(), { status: 400 });
   try {
     console.log('PATCH /api/issues/[id] called. params:', params, 'request.url:', request.url);
   } catch (e) {
@@ -57,15 +70,26 @@ export async function PATCH(
       return NextResponse.json({ error: 'Issue not found' }, { status: 404 });
     }
 
+    // const updatedIssue = await prisma.issue.update({
+    //   where: { id: issue.id },
+    //   data: {
+    //     title: body.title,
+    //     description: body.description,
+    //     assignedToUserId
+
+    //   },
+    // });
     const updatedIssue = await prisma.issue.update({
-      where: { id: issue.id },
-      data: {
+    where: { id: issue.id },
+    data: {
         title: body.title,
         description: body.description,
-        assignedToUserId
-
-      },
-    });
+        assignedToUserId: assignedToUserId || null // Handle null explicitly
+    },
+    include: {
+        assignedToUser: true // Include the user in response
+    }
+});
 
     return NextResponse.json(updatedIssue);
   } catch (err) {

@@ -1,4 +1,5 @@
 'use client';
+'use client';
 import { AlertDialog, Button, Flex } from '@radix-ui/themes'
 import axios from 'axios';
 import React from 'react'

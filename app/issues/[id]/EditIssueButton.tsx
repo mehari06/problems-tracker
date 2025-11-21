@@ -1,5 +1,6 @@
 "use client";
 
+'use client';
 import { Pencil2Icon } from '@radix-ui/react-icons'
 import Link from 'next/link'
 import React from 'react'
