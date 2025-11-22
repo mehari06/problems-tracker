@@ -164,15 +164,16 @@ const AssigneeSelect = ({ issue }: { issue: Issue }) => {
         >
             <Select.Trigger placeholder="Assign..." />
             <Select.Content>
-                <Select.Group>
-                    <Select.Label>Suggestions</Select.Label>
-                    <Select.Item value="">Unassigned</Select.Item>
-                    {users?.map(user => (
-                        <Select.Item key={user.id} value={user.id}>
-                            {user.name}
-                        </Select.Item>
-                    ))}
-                </Select.Group>
+                   <Select.Group>
+    <Select.Label>Suggestions</Select.Label>
+    {users?.map(user => (
+        <Select.Item key={user.id} value={user.id}>
+            {user.name}
+        </Select.Item>
+    ))}
+</Select.Group>
+<Select.Separator />
+<Select.Item value="unassigned">Unassigned</Select.Item>
             </Select.Content>
         </Select.Root>
     );

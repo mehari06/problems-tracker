@@ -19,3 +19,16 @@ export async function  POST(request:Request){
 });
 return NextResponse.json(newIssue,{status:201});
 }
+export async function GET(request: Request) {
+    const url = new URL(request.url);
+    const status = url.searchParams.get('status') ?? undefined;
+
+    const where = status && status !== 'all' ? { status } : undefined;
+
+    const issues = await prisma.issue.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+    });
+
+    return NextResponse.json(issues);
+}
