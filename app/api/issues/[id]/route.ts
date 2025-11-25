@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
-import { string } from "zod"
-import { safeParse } from "zod/v4/core";
-import { issueSchema,PatchIssueSchema } from './../../../validationSchema';
+import { PatchIssueSchema } from './../../../validationSchema';
 import prisma from "@/prisma/client";
-import { Issue } from '@prisma/client';
 import authOptions from "@/app/auth/authOptions";
 import { getServerSession } from "next-auth";
 
@@ -57,7 +54,7 @@ import { getServerSession } from "next-auth";
 
   try {
     const assignedToUserId = body.assigneeId;
-    if (assignedToUserId) {
+    if (assignedToUserId !== undefined && assignedToUserId !== null) {
       const user = await prisma.user.findUnique({ where: { id: assignedToUserId } });
       if (!user) {
         return NextResponse.json({ error: 'Invalid User' }, { status: 400 });
@@ -79,17 +76,21 @@ import { getServerSession } from "next-auth";
 
     //   },
     // });
-    const updatedIssue = await prisma.issue.update({
-    where: { id: issue.id },
-    data: {
-        title: body.title,
-        description: body.description,
-        assignedToUserId: assignedToUserId || null // Handle null explicitly
-    },
-    include: {
-        assignedToUser: true // Include the user in response
+    // Build update object only with fields provided to avoid overwriting unspecified fields
+    const updateData: any = {};
+    if (Object.prototype.hasOwnProperty.call(body, 'title')) updateData.title = body.title;
+    if (Object.prototype.hasOwnProperty.call(body, 'description')) updateData.description = body.description;
+    if (Object.prototype.hasOwnProperty.call(body, 'assigneeId')) updateData.assignedToUserId = body.assigneeId;
+
+    if (Object.keys(updateData).length === 0) {
+      return NextResponse.json({ error: 'No fields provided to update' }, { status: 400 });
     }
-});
+
+    const updatedIssue = await prisma.issue.update({
+      where: { id: issue.id },
+      data: updateData,
+      include: { assignedToUser: true }
+    });
 
     return NextResponse.json(updatedIssue);
   } catch (err) {
@@ -142,4 +143,33 @@ export async function DELETE(
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 
+}
+
+// GET single issue by id
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const idStr = params?.id ?? (() => {
+      try {
+        const segments = request.nextUrl.pathname.split('/').filter(Boolean);
+        return segments[segments.length - 1];
+      } catch (e) {
+        return undefined;
+      }
+    })();
+    const id = idStr ? parseInt(String(idStr)) : NaN;
+    if (isNaN(id)) {
+      return NextResponse.json({ error: 'Invalid id' }, { status: 400 });
+    }
+
+    const issue = await prisma.issue.findUnique({ where: { id }, include: { assignedToUser: true } });
+    if (!issue) return NextResponse.json({ error: 'Issue not found' }, { status: 404 });
+
+    return NextResponse.json(issue);
+  } catch (err) {
+    console.error('GET /api/issues/[id] error:', err);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
 }
