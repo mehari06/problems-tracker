@@ -4,7 +4,13 @@ import React, { PropsWithChildren } from 'react'
 
 const AuthProvider = ({ children }: PropsWithChildren) => {
   return (
-    <SessionProvider basePath="/api/auth">{children}</SessionProvider>
+    <SessionProvider
+      basePath="/api/auth"
+      refetchInterval={0}
+      refetchOnWindowFocus={false}
+    >
+      {children}
+    </SessionProvider>
   )
 }
 
