@@ -1,27 +1,16 @@
+import prisma from "@/prisma/client";
 import Pagination from "./components/Pagination";
+import IssueSummary from "./IssueSummary";
 import LatestIssues from "./LatestIssues";
 
  export default async function Home(){
-//  {
-//   searchParams,
-// }: {
-//   searchParams: Promise<{ page?: string }>;
-// }) {
-//   // Await the searchParams promise
-//   const resolvedSearchParams = await searchParams;
+ const open=await prisma.issue.count({where:{status:"OPEN"}});
+  const inProgress=await prisma.issue.count({where:{status:"IN_PROGRESS"}});
+  const closed=await prisma.issue.count({where:{status:"CLOSED"}});
 
-//   // parse page number safely; defaults to 1 if missing/invalid
-//   const pageStr = resolvedSearchParams?.page ?? '1';
-//   const pageNum = parseInt(pageStr, 10);
-//   const currentPage = Number.isNaN(pageNum) ? 1 : pageNum;
 
   return (
-    // <Pagination
-    //   itemCount={100}
-    //   pageSize={10}
-    //   currentPage={currentPage}
-    // />
-    <LatestIssues />
+  <IssueSummary open={open} inProgress={inProgress} closed={closed} />
 
   );
 }

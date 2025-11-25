@@ -1,0 +1,40 @@
+import { Status } from '@prisma/client';
+import { Flex,Card,Text,Button } from '@radix-ui/themes';
+import { stat } from 'fs';
+import Link from 'next/link';
+import React from 'react'
+import { Ca } from 'zod/v4/locales';
+interface Props{
+    open:number;
+    inProgress:number;
+    closed:number;
+}
+const IssueSummary = ({open,inProgress,closed}:Props) => {
+    const statuses: {
+        label:string;
+        value:number;   
+        status:Status
+    }[]=[
+        {label:'open Issues',value:open,status:'OPEN'},
+        {label:'In Progress Issues',value:inProgress,status:'IN_PROGRESS'},
+        {label:'Closed Issues',value:closed,status:'CLOSED'},
+    ]
+  return (
+    <Flex gap="4" >
+        {statuses.map((status)=>(
+            <Card key={status.label}  >
+                <Flex direction="column"  gap="1">
+                 <Link 
+                   className='text-sm font-medium '
+                 href={`/issues/list?status=${status.status}`}>{status.label}</Link> 
+                 <Text size="5"className='font-bold'>{status.value}</Text>
+
+
+    </Flex>
+    </Card>
+        ))}
+    </Flex>
+  )
+}
+
+export default IssueSummary
