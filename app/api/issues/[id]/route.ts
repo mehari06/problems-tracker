@@ -16,21 +16,23 @@ import { getServerSession } from "next-auth";
 //        const validation= PatchIssueSchema.safeParse(body);
 //     if(!validation.success)
 //       return NextResponse.json(validation.error.format(), {status:400});
-  // Validate id
-  // Log params for debugging and support fallback when params is missing
-  export async function PATCH(
-    request: NextRequest,
-    { params }: { params: { id: string } }) {
-    
-    const session = await getServerSession(authOptions)
-    if (!session) {
-        return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
+// Validate id
+// Log params for debugging and support fallback when params is missing
+export async function PATCH(
+  request: NextRequest,
+  props: { params: Promise<{ id: string }> }
+) {
+  const params = await props.params;
 
-    const body = await request.json();
-    const validation = PatchIssueSchema.safeParse(body);
-    if (!validation.success)
-        return NextResponse.json(validation.error.format(), { status: 400 });
+  const session = await getServerSession(authOptions)
+  if (!session) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
+  const body = await request.json();
+  const validation = PatchIssueSchema.safeParse(body);
+  if (!validation.success)
+    return NextResponse.json(validation.error.format(), { status: 400 });
   try {
     console.log('PATCH /api/issues/[id] called. params:', params, 'request.url:', request.url);
   } catch (e) {
@@ -73,7 +75,6 @@ import { getServerSession } from "next-auth";
     //     title: body.title,
     //     description: body.description,
     //     assignedToUserId
-
     //   },
     // });
     // Build update object only with fields provided to avoid overwriting unspecified fields
@@ -101,12 +102,14 @@ import { getServerSession } from "next-auth";
 }
 
 export async function DELETE(
-    request:NextRequest,
-    {params}:{params:{id:string}}){
-           const session =await getServerSession(authOptions)
-      if(!session){
-        return NextResponse.json({message:"Unauthorized"},{status:401});
-    }
+  request: NextRequest,
+  props: { params: Promise<{ id: string }> }
+) {
+  const params = await props.params;
+  const session = await getServerSession(authOptions)
+  if (!session) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
   // Log for debugging
   try {
     console.log('DELETE /api/issues/[id] called. params:', params, 'url:', request.url);
@@ -148,8 +151,9 @@ export async function DELETE(
 // GET single issue by id
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  props: { params: Promise<{ id: string }> }
 ) {
+  const params = await props.params;
   try {
     const idStr = params?.id ?? (() => {
       try {
