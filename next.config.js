@@ -1,9 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    turbopack: {
-        // Set the root directory to fix the lockfile warning
-        root: __dirname,
-    },
+  turbopack: {
+    // Set the root directory to fix the lockfile warning
+    root: __dirname,
+  },
+  outputFileTracingIncludes: {
+    '/api/**/*': ['./prisma/**/*'],
+  },
 }
 
 module.exports = nextConfig
