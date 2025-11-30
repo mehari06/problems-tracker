@@ -5,7 +5,7 @@ const nextConfig = {
     root: __dirname,
   },
   outputFileTracingIncludes: {
-    '/api/**/*': ['./prisma/**/*'],
+    '/**/*': ['./prisma/**/*'],
   },
 }
 
